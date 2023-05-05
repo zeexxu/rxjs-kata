@@ -3,7 +3,7 @@ import {ColDef, GridOptions, ICellEditorParams} from "ag-grid-community";
 import {PlantModelFixture} from "./models/fixtures/plant-model-fixture";
 import {GrowthRangeRendererComponent} from "./renderers/growth-range-renderer.component";
 import {UnitType} from "./models/unit-type";
-import {Observable, Observer, Subscriber} from "rxjs";
+import {from, groupBy, mergeMap, Observable, Observer, Subscriber, toArray} from "rxjs";
 import {GetRowIdParams} from "ag-grid-community/dist/lib/interfaces/iCallbackParams";
 import {PlantModel} from "./models/plant.model";
 
@@ -18,7 +18,7 @@ export class GardenComponent implements OnInit {
     next: (value) => {
       this.garden.forEach(plant => plant.updateGrowthHealth(value));
       this.gridOptions.api?.setRowData(this.garden);
-      this.gridOptions.api?.refreshCells({force : true});
+      this.gridOptions.api?.refreshCells({force: true});
     },
     error: (error) => {
     },
@@ -66,5 +66,11 @@ export class GardenComponent implements OnInit {
 
   ngOnInit(): void {
     this.moistureSensor.subscribe(this.moistureObserver);
+    from (this.garden).pipe(
+      // groupBy((plant: PlantModel) => plant.family),
+      groupBy(plant => plant.family),
+      mergeMap((group) => group.pipe(toArray()))
+
+    ).subscribe((families: PlantModel[]) => console.log(families));
   }
 }

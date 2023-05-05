@@ -4,6 +4,7 @@ export interface Plant {
   name: string,
   moistureRange: [number, number],
   growthHealth?: GrowthHealth
+  family?: string
 
   get GrowthHealth(): GrowthHealth,
 
@@ -11,7 +12,7 @@ export interface Plant {
 }
 
 export class PlantModel implements Plant {
-  constructor(public name: string, public moistureRange: [number, number], public growthHealth?: GrowthHealth) {
+  constructor(public name: string, public moistureRange: [number, number], public family : string, public growthHealth?: GrowthHealth) {
   }
 
   updateGrowthHealth(data: number): void {
